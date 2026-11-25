@@ -3,9 +3,19 @@
 namespace App\Modules\SupplierModule\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Modules\SupplierModule\Contracts\SupplierCatalogContract;
+use App\Modules\SupplierModule\Services\SupplierCatalogService;
 
 class SupplierModuleServiceProvider extends ServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->bind(
+            SupplierCatalogContract::class,
+            SupplierCatalogService::class
+        );
+    }
+
     public function boot(): void
     {
         $this->loadRoutesFrom(__DIR__.'/../Routes/web.php');
