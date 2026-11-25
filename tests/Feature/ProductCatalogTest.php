@@ -22,6 +22,9 @@ class ProductCatalogTest extends TestCase
         $this->assertNotNull($result);
         $this->assertEquals($product->id, $result['id']);
         $this->assertEquals($product->name, $result['name']);
+        $this->assertEquals($product->sku, $result['sku']);
+        $this->assertEquals($product->unit, $result['unit']);
+        $this->assertEquals($product->minimum_stock, $result['minimum_stock']);
     }
 
     public function test_returns_null_when_product_not_found(): void
