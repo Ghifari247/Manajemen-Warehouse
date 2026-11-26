@@ -4,24 +4,31 @@ namespace App\Modules\InventoryModule\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Modules\InventoryModule\Models\StockMovement;
-use App\Modules\ProductModule\Models\Product;
-use App\Modules\SupplierModule\Models\Supplier;
+use App\Modules\ProductModule\Contracts\ProductCatalogContract;
+use App\Modules\SupplierModule\Contracts\SupplierCatalogContract;
 
 class InventorySeeder extends Seeder
 {
     public function run(): void
     {
-        $supplier = Supplier::first();
+        $products = app(ProductCatalogContract::class)->all();
+        $suppliers = app(SupplierCatalogContract::class)->all();
 
-        foreach (Product::all() as $product) {
-            StockMovement::create([
-                'product_id' => $product->id,
-                'supplier_id' => $supplier?->id,
-                'type' => StockMovement::TYPE_IN,
-                'quantity' => 20,
-                'movement_date' => now()->toDateString(),
-                'notes' => 'Stok awal',
-            ]);
+        $supplierId = $suppliers[0]['id'] ?? null;
+
+        foreach ($products as $product) {
+            StockMovement::firstOrCreate(
+                [
+                    'product_id' => $product['id'],
+                    'type' => StockMovement::TYPE_IN,
+                    'notes' => 'Stok awal',
+                ],
+                [
+                    'supplier_id' => $supplierId,
+                    'quantity' => 20,
+                    'movement_date' => now()->toDateString(),
+                ]
+            );
         }
     }
 }

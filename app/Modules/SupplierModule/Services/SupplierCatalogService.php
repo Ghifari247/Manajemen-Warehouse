@@ -23,4 +23,11 @@ class SupplierCatalogService implements SupplierCatalogContract
             'email' => $supplier->email,
         ];
     }
+
+    public function all(): array
+    {
+        return Supplier::orderBy('name')
+            ->get(['id', 'code', 'name'])
+            ->toArray();
+    }
 }

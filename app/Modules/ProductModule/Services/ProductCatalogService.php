@@ -23,4 +23,11 @@ class ProductCatalogService implements ProductCatalogContract
             'minimum_stock' => $product->minimum_stock,
         ];
     }
+
+    public function all(): array
+    {
+        return Product::orderBy('name')
+            ->get(['id', 'sku', 'name', 'unit', 'minimum_stock'])
+            ->toArray();
+    }
 }
