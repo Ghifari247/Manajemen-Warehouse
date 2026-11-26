@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Modules\InventoryModule\Contracts\InventoryStockContract;
@@ -11,6 +13,16 @@ use App\Modules\ProductModule\Models\Product;
 class InventoryStockTest extends TestCase
 {
     use RefreshDatabase;
+    protected function setUp(): void
+{
+    parent::setUp();
+
+    Sanctum::actingAs(
+        User::factory()->create([
+            'role' => 'admin',
+        ])
+    );
+}
 
     public function test_current_stock_is_in_minus_out(): void
     {

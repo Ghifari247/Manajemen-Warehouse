@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Modules\InventoryModule\Http\Controllers\InventoryController;
 
-Route::middleware('api')
+Route::middleware(['api', 'auth:sanctum'])
     ->prefix('inventory')
     ->name('inventory.')
     ->group(function () {

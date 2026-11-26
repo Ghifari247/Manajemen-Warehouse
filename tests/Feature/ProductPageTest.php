@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Modules\ProductModule\Models\Product;
 
@@ -10,18 +11,30 @@ class ProductPageTest extends TestCase
 {
     use RefreshDatabase;
 
+   protected function setUp(): void
+{
+    parent::setUp();
+
+    $user = User::factory()->create([
+        'role' => 'admin',
+    ]);
+
+    $this->assertInstanceOf(User::class, $user);
+
+    $this->actingAs($user);
+}
+
     public function test_can_display_product_list(): void
     {
-        $product = Product::factory()->create([
+        Product::factory()->create([
             'sku' => 'BRGTEST001',
             'name' => 'Laptop Testing',
         ]);
 
-        $response = $this->get(route('product.page.index'));
-
-        $response->assertStatus(200);
-        $response->assertSee('Laptop Testing');
-        $response->assertSee('BRGTEST001');
+        $this->get(route('product.page.index'))
+            ->assertStatus(200)
+            ->assertSee('Laptop Testing')
+            ->assertSee('BRGTEST001');
     }
 
     public function test_can_create_product(): void

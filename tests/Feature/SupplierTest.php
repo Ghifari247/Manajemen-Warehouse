@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Modules\SupplierModule\Models\Supplier;
@@ -9,6 +11,16 @@ use App\Modules\SupplierModule\Models\Supplier;
 class SupplierTest extends TestCase
 {
     use RefreshDatabase;
+    protected function setUp(): void
+{
+    parent::setUp();
+
+    Sanctum::actingAs(
+        User::factory()->create([
+            'role' => 'admin',
+        ])
+    );
+}
 
     public function test_can_display_suppliers(): void
     {

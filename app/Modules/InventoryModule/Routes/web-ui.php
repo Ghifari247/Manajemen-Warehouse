@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Modules\InventoryModule\Http\Controllers\InventoryPageController;
 
-Route::middleware('web')->group(function () {
+Route::middleware(['web', 'auth'])->group(function () {
 
     Route::get('/warehouse/inventory', [InventoryPageController::class, 'index'])
         ->name('inventory.page.index');

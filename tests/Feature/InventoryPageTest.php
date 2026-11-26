@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Tests\TestCase;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Modules\InventoryModule\Models\StockMovement;
 use App\Modules\ProductModule\Models\Product;
@@ -12,22 +13,46 @@ class InventoryPageTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+{
+    parent::setUp();
+
+    /** @var \App\Models\User $user */
+    $user = User::factory()->create([
+        'role' => 'admin',
+    ]);
+
+    $this->actingAs($user);
+}
+
     public function test_can_display_stock_list(): void
     {
-        $product = Product::factory()->create(['name' => 'Laptop Testing', 'minimum_stock' => 5]);
-        StockMovement::factory()->in()->create(['product_id' => $product->id, 'quantity' => 2]);
+        $product = Product::factory()->create([
+            'name' => 'Laptop Testing',
+            'minimum_stock' => 5,
+        ]);
 
-        $response = $this->get(route('inventory.page.index'));
+        StockMovement::factory()->in()->create([
+            'product_id' => $product->id,
+            'quantity' => 2,
+        ]);
 
-        $response->assertStatus(200);
-        $response->assertSee('Laptop Testing');
-        $response->assertSee('Stok Menipis');
+        $this->get(route('inventory.page.index'))
+            ->assertStatus(200)
+            ->assertSee('Laptop Testing')
+            ->assertSee('Stok Menipis');
     }
 
     public function test_can_display_create_form_and_movement_history(): void
     {
-        $product = Product::factory()->create(['name' => 'Mouse Testing']);
-        $supplier = Supplier::factory()->create(['name' => 'PT Uji Coba']);
+        $product = Product::factory()->create([
+            'name' => 'Mouse Testing',
+        ]);
+
+        $supplier = Supplier::factory()->create([
+            'name' => 'PT Uji Coba',
+        ]);
+
         StockMovement::factory()->in()->create([
             'product_id' => $product->id,
             'supplier_id' => $supplier->id,
@@ -71,7 +96,11 @@ class InventoryPageTest extends TestCase
     public function test_stock_out_cannot_exceed_available_stock(): void
     {
         $product = Product::factory()->create();
-        StockMovement::factory()->in()->create(['product_id' => $product->id, 'quantity' => 5]);
+
+        StockMovement::factory()->in()->create([
+            'product_id' => $product->id,
+            'quantity' => 5,
+        ]);
 
         $response = $this->from(route('inventory.page.create'))
             ->post(route('inventory.page.store'), [
